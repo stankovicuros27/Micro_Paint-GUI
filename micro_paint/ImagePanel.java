@@ -29,6 +29,9 @@ public class ImagePanel extends JPanel {
 	public ImagePanel(ImageWindow imageWindow) {
 		super();
 		this.imageWindow = imageWindow;
+		image = new BufferedImage(imageWindow.getWidth(), imageWindow.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		image.getGraphics().setColor(Color.WHITE);
+		image.getGraphics().fillRect(0, 0, image.getWidth(), image.getHeight());
 		layerList = new ArrayList<Layer>();
 	}		
 	
@@ -42,6 +45,9 @@ public class ImagePanel extends JPanel {
 				imageWindow.setHeight(layer.getY() + layer.getImage().getHeight());
 			}
 			imageWindow.resizeCustom();
+			image = new BufferedImage(imageWindow.getWidth(), imageWindow.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+			image.getGraphics().setColor(Color.WHITE);
+			image.getGraphics().fillRect(0, 0, image.getWidth(), image.getHeight());
 			layerList.add(layer);
 		}
 		repaint();
@@ -54,9 +60,11 @@ public class ImagePanel extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
         for (Layer l : layerList) {
         	if (l.getImage() != null) {
-        		g.drawImage(l.getImage(), l.getX(), l.getY(), null);
+        		image.getGraphics().drawImage(l.getImage(), l.getX(), l.getY(), null);
+        		//g.drawImage(l.getImage(), l.getX(), l.getY(), null);
         	}
         }
+        g.drawImage(image, 0, 0, null);
     }        
 	
 	public ArrayList<Layer> getLayerList() {
@@ -65,4 +73,5 @@ public class ImagePanel extends JPanel {
 	
 	private ArrayList<Layer> layerList;
 	private ImageWindow imageWindow;
+	private BufferedImage image;
 }

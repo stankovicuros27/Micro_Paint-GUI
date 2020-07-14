@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -28,6 +29,32 @@ public class MenuWindow extends JFrame {
 	
 	private void addButtons() {
 	
+		btnShowImageInfo = new JButton("Show image info");
+		btnShowImageInfo.addActionListener(e -> {
+			JFrame f = new JFrame();
+			f.setLayout(new GridLayout(6, 1));
+			JLabel dimensions = new JLabel("Dimensions: " + imageWindow.getWidth() + "w : " + imageWindow.getHeight() + "h");
+			JLabel layers = new JLabel("Layers:");
+			String layerListString[] = new String[imageWindow.getImagePanel().getLayerList().size()];
+			for (int i = 0; i < imageWindow.getImagePanel().getLayerList().size(); i++) {
+				Layer l = imageWindow.getImagePanel().getLayerList().get(i);
+				layerListString[i] = "Index(" + i 
+						+ "), Path(" + l.getPath() + 
+						"), X:Y:W:H(" + l.getX() + ":" + l.getY() + ":" + l.getImage().getWidth() 
+						+ ":" + l.getImage().getHeight() + ")";
+			}
+			JList layerList = new JList<String>(layerListString);
+			layerList.setVisible(true);
+			
+			f.setBounds(505, 505, 300, 500);
+			f.add(dimensions);
+			f.add(layers);
+			f.add(layerList);
+			f.setVisible(true);
+			f.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		});
+		btnShowImageInfo.setBounds(0, 0, 200, 30);
+		
 		btnManageImageLayers = new JButton("Manage image layers");
 		btnManageImageLayers.addActionListener(e -> {
 			JFrame f = new JFrame();
@@ -110,6 +137,7 @@ public class MenuWindow extends JFrame {
 		btnSaveProject.setBounds(0, 250, 200, 30);
 		
 		
+		add(btnShowImageInfo);
 		add(btnManageImageLayers);
 		add(btnManageImageSelections);
 		add(btnPerformOperations);
@@ -123,6 +151,7 @@ public class MenuWindow extends JFrame {
 	private int width = 220, height = 280;
 	private ImageWindow imageWindow;
 	
+	private JButton btnShowImageInfo;
 	private JButton btnManageImageLayers;
 	private JButton btnManageImageSelections;
 	private JButton btnPerformOperations;
