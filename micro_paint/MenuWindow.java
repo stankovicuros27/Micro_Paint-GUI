@@ -232,6 +232,24 @@ public class MenuWindow extends JFrame {
 		
 		
 		btnPerformOperations = new JButton("Perform operation");
+		btnPerformOperations.addActionListener(e -> {
+			
+			Formatter.exportXML(imageWindow.getImagePanel(), "temp.xml");
+			
+			Runtime runtime = Runtime.getRuntime();
+			
+			try {
+				Process process = runtime.exec(new String[] {"C:\\Users\\Uros\\source\\repos\\Micro_Paint\\Debug\\Micro_Paint.exe", "temp.xml", "operation.fun", System.getProperty("user.dir")});
+				process.waitFor();
+				System.out.println(process.exitValue());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			System.out.println("DONE");
+			
+			Formatter.importXML(imageWindow.getImagePanel(), "temp.xml");
+		});
 		btnPerformOperations.setBounds(0, 150, 200, 30);
 		
 		

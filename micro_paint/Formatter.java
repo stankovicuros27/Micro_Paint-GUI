@@ -314,4 +314,5 @@ public class Formatter {
 			return;
 		}
 	}
+	private static int cnt = 0;
 }
