@@ -33,6 +33,7 @@ public class ImagePanel extends JPanel {
 		image.getGraphics().setColor(Color.WHITE);
 		image.getGraphics().fillRect(0, 0, image.getWidth(), image.getHeight());
 		layerList = new ArrayList<Layer>();
+		selectionList = new ArrayList<Selection>();
 	}		
 	
 	public void addLayer(Layer layer) {
@@ -53,6 +54,42 @@ public class ImagePanel extends JPanel {
 		repaint();
 	}
 	
+	public void removeLayerIndex(int ind) {
+		if(ind >= 0 && ind < layerList.size())
+			layerList.remove(ind);
+		changeDimensions();
+		repaint();
+	}
+	
+	public void addSelection(int x, int y, int w, int h) {
+		if (x + w > image.getWidth() || y + h > image.getHeight()) {
+			System.out.println("Cannot create Selection outside of the Image!");
+			return;
+		}
+		
+		Selection selection = new Selection(this, x, y, w, h);
+		selectionList.add(selection);
+	}
+	
+	public void removeSelectionIndex(int ind) {
+		if(ind >= 0 && ind < selectionList.size())
+			selectionList.remove(ind);
+	}
+	
+	private void changeDimensions() {
+		int maxW = 0;
+		int maxH = 0;
+		
+		for (Layer l : layerList) {
+			if (l.getX() + l.getImage().getWidth() > maxW) maxW = l.getX() + l.getImage().getWidth();
+			if (l.getY() + l.getImage().getHeight() > maxH) maxH = l.getY() + l.getImage().getHeight();
+		}
+		imageWindow.setWidth(maxW);
+		imageWindow.setHeight(maxH);
+		
+		imageWindow.resizeCustom();
+	}
+	
 	@Override
     public void paintComponent(Graphics g)
     {
@@ -71,7 +108,25 @@ public class ImagePanel extends JPanel {
 		return layerList;
 	}
 	
+	
+	public BufferedImage getImage() {
+		return image;
+	}
+
+	public void setImage(BufferedImage image) {
+		this.image = image;
+	}
+
+	public ArrayList<Selection> getSelectionList() {
+		return selectionList;
+	}
+
+	public void setSelectionList(ArrayList<Selection> selectionList) {
+		this.selectionList = selectionList;
+	}
+
 	private ArrayList<Layer> layerList;
+	private ArrayList<Selection> selectionList;
 	private ImageWindow imageWindow;
 	private BufferedImage image;
 }
