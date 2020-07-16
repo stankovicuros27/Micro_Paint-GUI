@@ -97,7 +97,7 @@ public class ImagePanel extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
         for (Layer l : layerList) {
         	if (l.getImage() != null) {
-        		image.getGraphics().drawImage(l.getImage(), l.getX(), l.getY(), null);
+        		image.getGraphics().drawImage(l.getImage(), 0, 0, null);
         		//g.drawImage(l.getImage(), l.getX(), l.getY(), null);
         	}
         }

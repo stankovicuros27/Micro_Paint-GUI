@@ -85,27 +85,27 @@ public class MenuWindow extends JFrame {
 				JFrame enterLayer = new JFrame();
 				JLabel pathL = new JLabel("Enter path:");
 				JTextField path = new JTextField();
-				JLabel xL = new JLabel("Enter x:");
-				JTextField x = new JTextField();
-				JLabel yL = new JLabel("Enter y:");
-				JTextField y = new JTextField();
+//				JLabel xL = new JLabel("Enter x:");
+//				JTextField x = new JTextField();
+//				JLabel yL = new JLabel("Enter y:");
+//				JTextField y = new JTextField();
 				JLabel opL = new JLabel("Enter opacity:");
 				JTextField opacity = new JTextField();
-				enterLayer.setLayout(new GridLayout(5, 2));
+				enterLayer.setLayout(new GridLayout(3, 2));
 				enterLayer.add(pathL);
 				enterLayer.add(path);
-				enterLayer.add(xL);
-				enterLayer.add(x);
-				enterLayer.add(yL);
-				enterLayer.add(y);
+//				enterLayer.add(xL);
+//				enterLayer.add(x);
+//				enterLayer.add(yL);
+//				enterLayer.add(y);
 				enterLayer.add(opL);
 				enterLayer.add(opacity);
 				
 				JButton confirm = new JButton("Confirm");
 				confirm.addActionListener(ee -> {
 					Layer l = new Layer(path.getText(), 
-							Integer.parseInt(x.getText()),
-							Integer.parseInt(y.getText()), 
+							Integer.parseInt(/*x.getText()*/"0"),
+							Integer.parseInt(/*y.getText()*/"0"), 
 							Integer.parseInt(opacity.getText()));
 					//Formatter.loadLayer(l);
 					
@@ -124,7 +124,7 @@ public class MenuWindow extends JFrame {
 				enterLayer.add(cancel);
 				
 				enterLayer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				enterLayer.setBounds(500, 500, 300, 300);
+				enterLayer.setBounds(500, 500, 300, 120);
 				enterLayer.setVisible(true);
 				
 			} else if (n == JOptionPane.NO_OPTION) {

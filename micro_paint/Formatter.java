@@ -40,8 +40,9 @@ public class Formatter {
 		if (ext.equals(".bmp")) {
 			 try {
 				 layer.setImage(ImageIO.read(new File(layer.getPath())));
-				 BufferedImage temp = new BufferedImage(layer.getImage().getWidth(), layer.getImage().getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-				 temp.getGraphics().drawImage(layer.getImage(), 0, 0, null);
+				 BufferedImage temp = new BufferedImage(layer.getImage().getWidth() + layer.getX(), 
+						 layer.getImage().getHeight() + layer.getY(), BufferedImage.TYPE_4BYTE_ABGR);
+				 temp.getGraphics().drawImage(layer.getImage(), layer.getX(), layer.getY(), null);
 				 layer.setImage(temp);
 		     } catch (IOException e) {
 		    	 e.printStackTrace();
@@ -131,7 +132,8 @@ public class Formatter {
 					fileInputStream.skip(headerSize);
 		            fileInputStream.read(pixels);
 		            
-					layer.setImage(new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR));
+					layer.setImage(new BufferedImage(w + layer.getX(), h + layer.getY(), BufferedImage.TYPE_3BYTE_BGR));
+					
 					for (int i = 0; i < w; i++) {
 						for (int j = 0; j < h; j++) {
 							byte rr = pixels[(i + j * w) * 3 + 2];
@@ -140,7 +142,7 @@ public class Formatter {
 							
 							int rgb = ((rb << 16) & 0xff0000) | ((rg << 8) & 0xff00) | (rr & 0xff);
 							
-							layer.getImage().setRGB(i, j, rgb);
+							layer.getImage().setRGB(i + layer.getX(), j + layer.getY(), rgb);
 						}
 					}
 					
@@ -153,7 +155,7 @@ public class Formatter {
 					fileInputStream.skip(headerSize);
 		            fileInputStream.read(pixels);
 		            
-		            layer.setImage(new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR));
+		            layer.setImage(new BufferedImage(w + layer.getX(), h + layer.getY(), BufferedImage.TYPE_4BYTE_ABGR));
 					for (int i = 0; i < w; i++) {
 						for (int j = 0; j < h; j++) {
 							byte rr = pixels[(i + j * w) * 4 + 2]; // sve 1
@@ -163,7 +165,7 @@ public class Formatter {
 							
 							int argb = ((ra << 24) & 0xff000000) | ((rb << 16) & 0xff0000) | ((rg << 8) & 0xff00) | ((rr) & 0xff);
 							
-							layer.getImage().setRGB(i, j, argb);
+							layer.getImage().setRGB(i + layer.getX(), j + layer.getY(), argb);
 						}
 					}	
 				} else {
@@ -281,6 +283,8 @@ public class Formatter {
 	}
 	
 	static void importXML(ImagePanel imagePanel, String path) {
+		imagePanel.getLayerList().clear();
+		imagePanel.getSelectionList().clear();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
