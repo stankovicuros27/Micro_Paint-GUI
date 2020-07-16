@@ -230,25 +230,119 @@ public class MenuWindow extends JFrame {
 		});
 		btnManageImageSelections.setBounds(0, 100, 200, 30);
 		
-		
 		btnPerformOperations = new JButton("Perform operation");
 		btnPerformOperations.addActionListener(e -> {
+				
+			JFrame f = new JFrame();
+			Object[] options = {"Make new composite operation",
+                    "Perform existing operation"};
 			
-			Formatter.exportXML(imageWindow.getImagePanel(), "temp.xml");
-			
-			Runtime runtime = Runtime.getRuntime();
-			
-			try {
-				Process process = runtime.exec(new String[] {"C:\\Users\\Uros\\source\\repos\\Micro_Paint\\Debug\\Micro_Paint.exe", "temp.xml", "operation.fun", System.getProperty("user.dir")});
-				process.waitFor();
-				System.out.println(process.exitValue());
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			int n = JOptionPane.showOptionDialog(f, "Select action", "Operation Manager",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE,
+							null,
+							options,
+							null);
+			if (n == JOptionPane.YES_OPTION) {
+				JFrame enterLayer = new JFrame();
+				JLabel numL = new JLabel("Enter number of operations:");
+				JTextField num = new JTextField();
+				enterLayer.setLayout(new GridLayout(1, 1));
+				enterLayer.add(numL);
+				enterLayer.add(num);
+				
+				JButton confirm = new JButton("Confirm");
+				confirm.addActionListener(ee -> {
+					
+					int nn = Integer.parseInt(num.getText());
+					
+					f.dispose();
+					enterLayer.dispose();
+					
+					JFrame ff = new JFrame();
+					int height = 50 * nn;
+					ff.setBounds(500, 500, 300, height);
+					
+					JLabel operationL = new JLabel("OpCode/Operand");
+					
+					JTextField operations[][] = new JTextField[nn][2];
+					for (int i = 0; i < nn; i++) {
+						operations[i][0] = new JTextField();
+						operations[i][1] = new JTextField();
+					}
+					
+					String opcodes[] = new String[nn];
+					Integer operands[] = new Integer[nn];
+					
+					ff.setLayout(new GridLayout(nn + 2, 2));
+					ff.add(operationL);
+					ff.add(new JLabel());
+					for (int i = 0; i < nn; i++) {
+						ff.add(operations[i][0]);
+						ff.add(operations[i][1]);
+					}
+					
+					JButton btn = new JButton("Confirm");
+					ff.add(btn);
+					
+					btn.addActionListener(eee -> {
+						
+						for (int i = 0; i < nn; i++) {
+							opcodes[i] = "" + operations[i][0].getText();
+							operands[i] = Integer.parseInt(operations[i][1].getText());
+						}
+						
+						Operation op = new Operation();
+						for (int i = 0; i < nn; i++) {
+							System.out.println(opcodes[i] + " " + operands[i] + " " + op + " " + op.getOperandList());
+							op.getOperationList().add(opcodes[i]);
+							op.getOperandList().add(operands[i]);
+						}
+						
+						String path = JOptionPane.showInputDialog(ff,"Enter operation path"); 
+						Formatter.exportOperation(op, path);
+						
+						ff.dispose();
+					});
+					
+					ff.setVisible(true);
+				});
+				
+				JButton cancel = new JButton("Cancel");
+				cancel.addActionListener(ee -> {
+					f.dispose();
+					enterLayer.dispose();
+				});
+				
+				enterLayer.setLayout(new GridLayout(3, 1));
+				enterLayer.add(confirm);
+				enterLayer.add(cancel);
+				
+				enterLayer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				enterLayer.setBounds(500, 500, 450, 120);
+				enterLayer.setVisible(true);
+				
+			} else if (n == JOptionPane.NO_OPTION) {
+				JFrame ff = new JFrame();
+			    String path = JOptionPane.showInputDialog(ff,"Enter operation path"); 
+			    
+			    Formatter.exportXML(imageWindow.getImagePanel(), "temp.xml");
+				
+				Runtime runtime = Runtime.getRuntime();
+				
+				try {
+					Process process = runtime.exec(new String[] {"C:\\Users\\Uros\\source\\repos\\Micro_Paint\\Debug\\Micro_Paint.exe", 
+							"temp.xml", path, System.getProperty("user.dir")});
+					process.waitFor();
+					System.out.println(process.exitValue());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				
+				System.out.println("DONE");
+				
+				Formatter.importXML(imageWindow.getImagePanel(), "temp.xml");
 			}
-			
-			System.out.println("DONE");
-			
-			Formatter.importXML(imageWindow.getImagePanel(), "temp.xml");
 		});
 		btnPerformOperations.setBounds(0, 150, 200, 30);
 		

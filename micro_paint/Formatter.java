@@ -230,7 +230,7 @@ public class Formatter {
         selection.setAttribute("h", "" + sel.getHeight());
         return selection;
     }
-	
+		
 	static void exportXML(ImagePanel imagePanel, String path) {
 		try {
 			
@@ -314,5 +314,62 @@ public class Formatter {
 			return;
 		}
 	}
+
+	private static Node createOperation(Document doc, String opcode, int operand) {
+		Element operation = doc.createElement("Operation");
+		
+	    //operation.appendChild(doc.createElement("Operation_Code").appendChild(doc.createTextNode(opcode)));
+	    Element opCode = doc.createElement("Operation_Code");
+	    opCode.appendChild(doc.createTextNode(opcode));
+	    operation.appendChild(opCode);
+	    
+	    //operation.appendChild(doc.createElement("Operand").appendChild(doc.createTextNode("" + operand)));
+	    Element oper = doc.createElement("Operand");
+	    oper.appendChild(doc.createTextNode("" + operand));
+	    operation.appendChild(oper);
+	    
+        return operation;
+	}
+	
+	static void exportOperation(Operation op, String path) {
+		try {
+			
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder builder = factory.newDocumentBuilder();
+	        Document doc = builder.newDocument();
+	        
+	        Element root = doc.createElement("Root");
+	        doc.appendChild(root);   
+	        doc.setXmlStandalone(true);
+
+	        Element operationList = doc.createElement("Composite_Operation");
+	        operationList.setAttribute("Operation_Count", "" + op.getOperandList().size());	        
+	        root.appendChild(operationList);
+	       	        
+	        for (int i = 0; i < op.getOperandList().size(); i++) {
+	        	operationList.appendChild(createOperation(doc, "" + op.getOperationList().get(i), op.getOperandList().get(i)));
+	        }
+
+	        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	        Transformer transf = transformerFactory.newTransformer();
+	        
+	        //transf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+	        transf.setOutputProperty(OutputKeys.INDENT, "yes");
+	        transf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+	        //transf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+	        
+	        DOMSource source = new DOMSource(doc);
+
+	        File myFile = new File(path);
+
+	        StreamResult file = new StreamResult(myFile);
+
+	        transf.transform(source, file);
+	        
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static int cnt = 0;
 }
