@@ -217,6 +217,8 @@ public class Formatter {
 	private static Node createLayer(Document doc, Layer lay) {
         Element layer = doc.createElement("Layer");
         layer.setAttribute("Path", lay.getPath());
+        layer.setAttribute("x", "" + lay.getX());
+        layer.setAttribute("y", "" + lay.getY());
         return layer;
     }
 	
@@ -295,7 +297,13 @@ public class Formatter {
 				if (layNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element lay = (Element) layNode;
 					String pathLay = lay.getAttribute("Path");
-					imagePanel.addLayer(new Layer(pathLay, 0, 0));
+					int index = pathLay.lastIndexOf('/');
+					if (index != -1) {
+						pathLay = pathLay.substring(index + 1, pathLay.length());
+					}
+					int x = Integer.parseInt(lay.getAttribute("x"));
+					int y = Integer.parseInt(lay.getAttribute("y"));
+					imagePanel.addLayer(new Layer(pathLay, x, y));
 				}
 			}
 			

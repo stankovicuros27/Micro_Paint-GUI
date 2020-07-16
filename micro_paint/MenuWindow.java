@@ -26,8 +26,8 @@ public class MenuWindow extends JFrame {
 	}
 
 	private MenuWindow() {
-		super("Menu Window");
-		imageWindow = new ImageWindow(90, 90);
+		super("Menu");
+		imageWindow = new ImageWindow(270, 270);
 		setBounds(150, 300, width, height);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -95,19 +95,19 @@ public class MenuWindow extends JFrame {
 				JFrame enterLayer = new JFrame();
 				JLabel pathL = new JLabel("Enter path:");
 				JTextField path = new JTextField();
-//				JLabel xL = new JLabel("Enter x:");
-//				JTextField x = new JTextField();
-//				JLabel yL = new JLabel("Enter y:");
-//				JTextField y = new JTextField();
+				JLabel xL = new JLabel("Enter x:");
+				JTextField x = new JTextField();
+				JLabel yL = new JLabel("Enter y:");
+				JTextField y = new JTextField();
 				JLabel opL = new JLabel("Enter opacity:");
 				JTextField opacity = new JTextField();
-				enterLayer.setLayout(new GridLayout(3, 2));
+				enterLayer.setLayout(new GridLayout(5, 2));
 				enterLayer.add(pathL);
 				enterLayer.add(path);
-//				enterLayer.add(xL);
-//				enterLayer.add(x);
-//				enterLayer.add(yL);
-//				enterLayer.add(y);
+				enterLayer.add(xL);
+				enterLayer.add(x);
+				enterLayer.add(yL);
+				enterLayer.add(y);
 				enterLayer.add(opL);
 				enterLayer.add(opacity);
 				
@@ -115,10 +115,9 @@ public class MenuWindow extends JFrame {
 				confirm.addActionListener(ee -> {
 					try {
 						Layer l = new Layer(path.getText(), 
-								Integer.parseInt(/*x.getText()*/"0"),
-								Integer.parseInt(/*y.getText()*/"0"), 
+								Integer.parseInt(x.getText()),
+								Integer.parseInt(y.getText()), 
 								Integer.parseInt(opacity.getText()));
-						//Formatter.loadLayer(l);
 						
 						imageWindow.getImagePanel().addLayer(l);
 					} catch (NumberFormatException ex) {
@@ -142,7 +141,7 @@ public class MenuWindow extends JFrame {
 				enterLayer.add(cancel);
 				
 				enterLayer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				enterLayer.setBounds(500, 500, 300, 120);
+				enterLayer.setBounds(500, 500, 300, 240);
 				enterLayer.setVisible(true);
 				
 			} else if (n == JOptionPane.NO_OPTION) {
@@ -224,8 +223,10 @@ public class MenuWindow extends JFrame {
 						Integer.parseInt(width.getText()), 
 						Integer.parseInt(height.getText()));*/
 						ImagePanel ip = imageWindow.getImagePanel();
-						ip.addSelection(ip.getMouseX(), ip.getMouseY(), 
-								ip.getMouseX2() - ip.getMouseX(), ip.getMouseY2() - ip.getMouseY());
+						if (ip.getMouseX() != 0 || ip.getMouseY() != 0 || ip.getMouseX2() != 0 || ip.getMouseY2() != 0) {
+							ip.addSelection(ip.getMouseX(), ip.getMouseY(), 
+									ip.getMouseX2() - ip.getMouseX(), ip.getMouseY2() - ip.getMouseY());
+						}
 					} catch (NumberFormatException ex) {
 				    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
 				    			    "Couldn't read integer",
@@ -395,15 +396,17 @@ public class MenuWindow extends JFrame {
 			} else if (n == JOptionPane.NO_OPTION) {
 				JFrame ff = new JFrame();
 			    String path = JOptionPane.showInputDialog(ff,"Enter operation path"); 
+			    if (path == null) return;
 			    
 			    Formatter.exportXML(imageWindow.getImagePanel(), "temp.xml");
 				
 				Runtime runtime = Runtime.getRuntime();
-				
+				int x = 0;
 				try {
 					Process process = runtime.exec(new String[] {cppPath, 
 							"temp.xml", path, System.getProperty("user.dir")});
 					process.waitFor();
+					x = process.exitValue(); //new
 					System.out.println(process.exitValue());
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -411,7 +414,7 @@ public class MenuWindow extends JFrame {
 				
 				System.out.println("DONE");
 				
-				Formatter.importXML(imageWindow.getImagePanel(), "temp.xml");
+				if (x >= 0) Formatter.importXML(imageWindow.getImagePanel(), "temp.xml");
 			}
 		});
 		btnPerformOperations.setBounds(0, 150, 200, 30);
@@ -421,7 +424,23 @@ public class MenuWindow extends JFrame {
 		btnSaveImage.addActionListener(e -> {
 			JFrame f = new JFrame();
 		    String path = JOptionPane.showInputDialog(f,"Enter image path"); 
-		    Formatter.exportImage(imageWindow.getImagePanel(), path);
+		    if (path == null) return;
+		    if (path.length() < 5) {  JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+    			"Couldn't export image",
+    			"Invalid input",
+    			JOptionPane.ERROR_MESSAGE);
+		    	return;
+		    }
+		    String ext = path.substring(path.length() - 4);
+		    if (ext.equals(".pam") || ext.equals(".bmp")) {
+		    	Formatter.exportImage(imageWindow.getImagePanel(), path);
+		    } else {
+		    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+		    			    "Couldn't export image",
+		    			    "Invalid input",
+		    			    JOptionPane.ERROR_MESSAGE);
+		    	 return;
+		    }
 		});
 		btnSaveImage.setBounds(0, 200, 200, 30);
 		
@@ -448,6 +467,7 @@ public class MenuWindow extends JFrame {
 				System.out.println("Loading project");
 				JFrame f = new JFrame();
 			    String path = JOptionPane.showInputDialog(f,"Enter project path"); 
+			    if (path == null) return;
 			    Formatter.importXML(imageWindow.getImagePanel(), path);
 			}
 			
@@ -465,8 +485,8 @@ public class MenuWindow extends JFrame {
 		setLayout(null);
 	}
 	
-	private String name = "Menu Window";
-	private int width = 217, height = 320;
+	private String name = "Menu";
+	private int width = 213, height = 320;
 	private ImageWindow imageWindow;
 	
 	private JButton btnShowImageInfo;
