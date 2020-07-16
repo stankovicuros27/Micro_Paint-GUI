@@ -1,5 +1,10 @@
 package micro_paint;
 
+import java.awt.Graphics;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 public class Selection {
 
 	public Selection(ImagePanel imagePanel, int x, int y, int width, int height) {

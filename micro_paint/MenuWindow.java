@@ -27,7 +27,7 @@ public class MenuWindow extends JFrame {
 
 	private MenuWindow() {
 		super("Menu Window");
-		imageWindow = new ImageWindow(1, 1);
+		imageWindow = new ImageWindow(90, 90);
 		setBounds(150, 300, width, height);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -68,7 +68,7 @@ public class MenuWindow extends JFrame {
 			JList selectionList = new JList<String>(selectionListString);
 			layerList.setVisible(true);
 			
-			f.setBounds(505, 505, 300, 500);
+			f.setBounds(505, 505, 500, 300);
 			f.add(dimensions);
 			f.add(layers);
 			f.add(layerList);
@@ -192,8 +192,11 @@ public class MenuWindow extends JFrame {
 							options,
 							null);
 			if (n == JOptionPane.YES_OPTION) {
+				imageWindow.getImagePanel().setDrawSelection(true);
+				
 				JFrame enterLayer = new JFrame();
-				JLabel xL = new JLabel("Enter x:");
+				enterLayer.setLayout(new GridLayout(2, 1));
+				/*JLabel xL = new JLabel("Enter x:");
 				JTextField x = new JTextField();
 				JLabel yL = new JLabel("Enter y:");
 				JTextField y = new JTextField();
@@ -210,16 +213,19 @@ public class MenuWindow extends JFrame {
 				enterLayer.add(wL);
 				enterLayer.add(width);
 				enterLayer.add(hL);
-				enterLayer.add(height);
+				enterLayer.add(height);*/
 				
 				JButton confirm = new JButton("Confirm");
 				confirm.addActionListener(ee -> {
 					
 					try {
-						imageWindow.getImagePanel().addSelection(Integer.parseInt(x.getText()), 
+						/*imageWindow.getImagePanel().addSelection(Integer.parseInt(x.getText()), 
 						Integer.parseInt(y.getText()), 
 						Integer.parseInt(width.getText()), 
-						Integer.parseInt(height.getText()));
+						Integer.parseInt(height.getText()));*/
+						ImagePanel ip = imageWindow.getImagePanel();
+						ip.addSelection(ip.getMouseX(), ip.getMouseY(), 
+								ip.getMouseX2() - ip.getMouseX(), ip.getMouseY2() - ip.getMouseY());
 					} catch (NumberFormatException ex) {
 				    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
 				    			    "Couldn't read integer",
@@ -227,7 +233,7 @@ public class MenuWindow extends JFrame {
 				    			    JOptionPane.ERROR_MESSAGE);
 					}
 					
-
+					imageWindow.getImagePanel().setDrawSelection(false);
 					f.dispose();
 					enterLayer.dispose();
 				});
@@ -242,7 +248,7 @@ public class MenuWindow extends JFrame {
 				enterLayer.add(cancel);
 				
 				enterLayer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				enterLayer.setBounds(500, 500, 300, 300);
+				enterLayer.setBounds(500, 500, 200, 150);
 				enterLayer.setVisible(true);
 				
 			} else if (n == JOptionPane.NO_OPTION) {
@@ -314,7 +320,7 @@ public class MenuWindow extends JFrame {
 					enterLayer.dispose();
 					
 					JFrame ff = new JFrame();
-					int height = 50 * nn;
+					int height = 50 * (nn + 1);
 					ff.setBounds(500, 500, 300, height);
 					
 					JLabel operationL = new JLabel("OpCode/Operand");

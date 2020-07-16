@@ -1,6 +1,11 @@
 package micro_paint;
 
 import java.awt.Color;
+import javax.swing.*;
+
+import java.awt.*;
+
+import java.awt.event.*;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.Point;
@@ -35,8 +40,55 @@ public class ImagePanel extends JPanel {
 		image.getGraphics().fillRect(0, 0, image.getWidth(), image.getHeight());
 		layerList = new ArrayList<Layer>();
 		selectionList = new ArrayList<Selection>();
+		
+		x = y = x2 = y2 = 0; // from stackoverflow
+	    MyMouseListener listener = new MyMouseListener();
+	    addMouseListener(listener);
+	    addMouseMotionListener(listener);
 	}		
 	
+	// from stackoverflow
+	public void setStartPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setEndPoint(int x, int y) {
+        x2 = (x);
+        y2 = (y);
+    }
+
+    public void drawPerfectRect(Graphics g, int x, int y, int x2, int y2) {
+        int px = Math.min(x,x2);
+        int py = Math.min(y,y2);
+        int pw=Math.abs(x-x2);
+        int ph=Math.abs(y-y2);
+        g.drawRect(px, py, pw, ph);
+    }
+
+    class MyMouseListener extends MouseAdapter {
+
+        public void mousePressed(MouseEvent e) {
+            if (drawSelection) setStartPoint(e.getX(), e.getY());
+        }
+
+        public void mouseDragged(MouseEvent e) {
+        	if (drawSelection) {
+        		setEndPoint(e.getX(), e.getY());
+        		repaint(); 
+            }
+        }
+
+        public void mouseReleased(MouseEvent e) {
+        	if (drawSelection) {
+                setEndPoint(e.getX(), e.getY());
+                repaint();
+        	}
+        }
+    }
+    
+	// ---
+    
 	public void addLayer(Layer layer) {
 		if (layer != null) {
 			if(layer.getOpacity() != 100) {
@@ -51,10 +103,24 @@ public class ImagePanel extends JPanel {
 							"ImageOpacity", layer.getPath(), "" + op, "null"});
 					process.waitFor();
 					System.out.println(process.exitValue());
+					
+					String path = layer.getPath();
+					String ext = layer.getPath().substring(layer.getPath().length() - 4);	
+					if (ext.equals(".bmp")) {
+						path = path.substring(0, path.length() - 4);
+						path += "Opacity.bmp";
+						layer.setPath(path);
+					} else if (ext.equals(".pam")) {
+						path = path.substring(0, path.length() - 4);
+						path += "Opacity.pam";
+						layer.setPath(path);
+					}			
+					
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
+			
 			Formatter.loadLayer(layer);
 			if (!layer.isOk() || layer.getImage() == null) {
 				JOptionPane.showMessageDialog(MenuWindow.getInstance(),
@@ -93,6 +159,9 @@ public class ImagePanel extends JPanel {
 		
 		Selection selection = new Selection(this, x, y, w, h);
 		selectionList.add(selection);
+		drawSelection = false;
+		x = y = x2 = y2 = 0;
+		repaint();
 	}
 	
 	public void removeSelectionIndex(int ind) {
@@ -126,6 +195,11 @@ public class ImagePanel extends JPanel {
         	}
         }
         g.drawImage(image, 0, 0, null);
+        
+        if (drawSelection) {
+            g.setColor(Color.RED);
+            drawPerfectRect(g, x, y, x2, y2);
+        }
     }        
 	
 	public ArrayList<Layer> getLayerList() {
@@ -149,8 +223,30 @@ public class ImagePanel extends JPanel {
 		this.selectionList = selectionList;
 	}
 
+	public int getMouseX() {
+		return x;
+	}
+	public int getMouseY() {
+		return y;
+	}
+	public int getMouseX2() {
+		return x2;
+	}
+	public int getMouseY2() {
+		return y2;
+	}
+	public boolean getDrawSelection() {
+		return drawSelection;
+	}
+	public void setDrawSelection(boolean drawSelection) {
+		this.drawSelection = drawSelection;
+	}
+
+
 	private ArrayList<Layer> layerList;
 	private ArrayList<Selection> selectionList;
 	private ImageWindow imageWindow;
 	private BufferedImage image;
+	int x, y, x2, y2;
+	boolean drawSelection = false;
 }

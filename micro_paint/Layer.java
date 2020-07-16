@@ -28,6 +28,10 @@ public class Layer {
 	public String getPath() {
 		return path;
 	}
+	
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	public int getOpacity() {
 		return opacity;
@@ -65,7 +69,7 @@ public class Layer {
 
 	private BufferedImage image;
 	private String path;
-	private int opacity;
+	private int opacity = 100;
 	private int x, y;
 	private boolean ok = false;
 }
