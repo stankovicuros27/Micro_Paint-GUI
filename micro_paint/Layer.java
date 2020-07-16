@@ -53,8 +53,19 @@ public class Layer {
 		this.y = y;
 	}
 	
+	public boolean isOk() {
+		return ok;
+	}
+
+	public void setOk(boolean ok) {
+		this.ok = ok;
+	}
+
+
+
 	private BufferedImage image;
 	private String path;
 	private int opacity;
 	private int x, y;
+	private boolean ok = false;
 }

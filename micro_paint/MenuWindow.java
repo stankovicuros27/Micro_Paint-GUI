@@ -15,10 +15,19 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 public class MenuWindow extends JFrame {
+	
+	public static String cppPath = "C:\\Users\\Uros\\source\\repos\\Micro_Paint\\Debug\\Micro_Paint.exe";
+	
+	static MenuWindow inst = null;
+	
+	public static MenuWindow getInstance() {
+		if (inst == null) return inst = new MenuWindow();
+		else return inst;
+	}
 
-	public MenuWindow() {
+	private MenuWindow() {
 		super("Menu Window");
-		imageWindow = new ImageWindow(600, 600);
+		imageWindow = new ImageWindow(1, 1);
 		setBounds(150, 300, width, height);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -26,6 +35,7 @@ public class MenuWindow extends JFrame {
 		
 		setVisible(true);
 		setResizable(false);
+		inst = this;
 	}
 	
 	private void addButtons() {
@@ -103,13 +113,21 @@ public class MenuWindow extends JFrame {
 				
 				JButton confirm = new JButton("Confirm");
 				confirm.addActionListener(ee -> {
-					Layer l = new Layer(path.getText(), 
-							Integer.parseInt(/*x.getText()*/"0"),
-							Integer.parseInt(/*y.getText()*/"0"), 
-							Integer.parseInt(opacity.getText()));
-					//Formatter.loadLayer(l);
+					try {
+						Layer l = new Layer(path.getText(), 
+								Integer.parseInt(/*x.getText()*/"0"),
+								Integer.parseInt(/*y.getText()*/"0"), 
+								Integer.parseInt(opacity.getText()));
+						//Formatter.loadLayer(l);
+						
+						imageWindow.getImagePanel().addLayer(l);
+					} catch (NumberFormatException ex) {
+				    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+				    			    "Couldn't read integer",
+				    			    "Invalid input",
+				    			    JOptionPane.ERROR_MESSAGE);
+					}
 					
-					imageWindow.getImagePanel().addLayer(l);
 					f.dispose();
 					enterLayer.dispose();
 				});
@@ -133,7 +151,17 @@ public class MenuWindow extends JFrame {
 				JTextField tf = new JTextField();
 				JButton btn = new JButton("Delete");
 				btn.addActionListener(eee -> {
-					imageWindow.getImagePanel().removeLayerIndex(Integer.parseInt(tf.getText()));
+					
+					
+					try {
+						imageWindow.getImagePanel().removeLayerIndex(Integer.parseInt(tf.getText()));
+					} catch (NumberFormatException ex) {
+				    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+				    			    "Couldn't read integer",
+				    			    "Invalid input",
+				    			    JOptionPane.ERROR_MESSAGE);
+					}
+					
 					deleteLayer.dispose();
 				});
 				
@@ -186,10 +214,20 @@ public class MenuWindow extends JFrame {
 				
 				JButton confirm = new JButton("Confirm");
 				confirm.addActionListener(ee -> {
-					imageWindow.getImagePanel().addSelection(Integer.parseInt(x.getText()), 
-							Integer.parseInt(y.getText()), 
-							Integer.parseInt(width.getText()), 
-							Integer.parseInt(height.getText()));
+					
+					try {
+						imageWindow.getImagePanel().addSelection(Integer.parseInt(x.getText()), 
+						Integer.parseInt(y.getText()), 
+						Integer.parseInt(width.getText()), 
+						Integer.parseInt(height.getText()));
+					} catch (NumberFormatException ex) {
+				    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+				    			    "Couldn't read integer",
+				    			    "Invalid input",
+				    			    JOptionPane.ERROR_MESSAGE);
+					}
+					
+
 					f.dispose();
 					enterLayer.dispose();
 				});
@@ -213,7 +251,15 @@ public class MenuWindow extends JFrame {
 				JTextField tf = new JTextField();
 				JButton btn = new JButton("Delete");
 				btn.addActionListener(eee -> {
-					imageWindow.getImagePanel().removeSelectionIndex(Integer.parseInt(tf.getText()));
+					try {
+						imageWindow.getImagePanel().removeSelectionIndex(Integer.parseInt(tf.getText()));
+					} catch (NumberFormatException ex) {
+				    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+				    			    "Couldn't read integer",
+				    			    "Invalid input",
+				    			    JOptionPane.ERROR_MESSAGE);
+					}
+					
 					deleteLayer.dispose();
 				});
 				
@@ -253,8 +299,16 @@ public class MenuWindow extends JFrame {
 				
 				JButton confirm = new JButton("Confirm");
 				confirm.addActionListener(ee -> {
-					
-					int nn = Integer.parseInt(num.getText());
+					int nn = 0;
+					try {
+						nn = Integer.parseInt(num.getText());
+					} catch (NumberFormatException ex) {
+				    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+				    			    "Couldn't read integer",
+				    			    "Invalid input",
+				    			    JOptionPane.ERROR_MESSAGE);
+				    	 return;
+					}
 					
 					f.dispose();
 					enterLayer.dispose();
@@ -285,15 +339,25 @@ public class MenuWindow extends JFrame {
 					JButton btn = new JButton("Confirm");
 					ff.add(btn);
 					
+					int xx = nn;
+					
 					btn.addActionListener(eee -> {
 						
-						for (int i = 0; i < nn; i++) {
-							opcodes[i] = "" + operations[i][0].getText();
-							operands[i] = Integer.parseInt(operations[i][1].getText());
+						try {
+							for (int i = 0; i < xx; i++) {
+								opcodes[i] = "" + operations[i][0].getText();
+								operands[i] = Integer.parseInt(operations[i][1].getText());
+							}
+						} catch (NumberFormatException ex) {
+					    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+					    			    "Couldn't read integer",
+					    			    "Invalid input",
+					    			    JOptionPane.ERROR_MESSAGE);
+					    	 return;
 						}
 						
 						Operation op = new Operation();
-						for (int i = 0; i < nn; i++) {
+						for (int i = 0; i < xx; i++) {
 							System.out.println(opcodes[i] + " " + operands[i] + " " + op + " " + op.getOperandList());
 							op.getOperationList().add(opcodes[i]);
 							op.getOperandList().add(operands[i]);
@@ -331,7 +395,7 @@ public class MenuWindow extends JFrame {
 				Runtime runtime = Runtime.getRuntime();
 				
 				try {
-					Process process = runtime.exec(new String[] {"C:\\Users\\Uros\\source\\repos\\Micro_Paint\\Debug\\Micro_Paint.exe", 
+					Process process = runtime.exec(new String[] {cppPath, 
 							"temp.xml", path, System.getProperty("user.dir")});
 					process.waitFor();
 					System.out.println(process.exitValue());
@@ -351,7 +415,7 @@ public class MenuWindow extends JFrame {
 		btnSaveImage.addActionListener(e -> {
 			JFrame f = new JFrame();
 		    String path = JOptionPane.showInputDialog(f,"Enter image path"); 
-		    Formatter.exportImage(imageWindow.getImagePanel().getImage(), path);
+		    Formatter.exportImage(imageWindow.getImagePanel(), path);
 		});
 		btnSaveImage.setBounds(0, 200, 200, 30);
 		

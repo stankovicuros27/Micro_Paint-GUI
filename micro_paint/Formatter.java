@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,7 +46,10 @@ public class Formatter {
 				 temp.getGraphics().drawImage(layer.getImage(), layer.getX(), layer.getY(), null);
 				 layer.setImage(temp);
 		     } catch (IOException e) {
-		    	 e.printStackTrace();
+		    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+		    			    "Couldn't read your file",
+		    			    "Invalid File",
+		    			    JOptionPane.ERROR_MESSAGE);
 		     }
 			 
 		// Loading PAM Image	 
@@ -173,49 +177,41 @@ public class Formatter {
 				}
 	
 			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
+		    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+		    			    "Couldn't read your file",
+		    			    "Invalid File",
+		    			    JOptionPane.ERROR_MESSAGE);
 			} catch (IOException e) {
-				e.printStackTrace();
+		    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+		    			    "Couldn't read your file",
+		    			    "Invalid File",
+		    			    JOptionPane.ERROR_MESSAGE);
 			} catch (Exception e) {
-				e.printStackTrace();
+		    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+		    			    "Couldn't read your file",
+		    			    "Invalid File",
+		    			    JOptionPane.ERROR_MESSAGE);
 			}  
 		}
 		
+		layer.setOk(true);
+		
 	}
 	
-	static void exportImage(BufferedImage img, String path) {
-		String ext = path.substring(path.length() - 4);
+	static void exportImage(ImagePanel imagePanel, String path) {
 		
-		if(ext.equals(".pam")) {
-			try {
-				FileWriter myWriter = new FileWriter(path);
-				myWriter.write("P7\n");
-				myWriter.write("WIDTH " + img.getWidth() + "\n");
-				myWriter.write("HEIGHT " + img.getHeight() + "\n");
-				myWriter.write("DEPTH 4\n");
-				myWriter.write("MAXVAL 255\n");
-				myWriter.write("TUPLTYPE RGB_ALPHA\n");
-				myWriter.write("ENDHDR\n");
-				
-				for(int i = 0; i < img.getWidth(); i++) {
-					for(int j = 0; j < img.getHeight(); j++) {
-						int rgb = img.getRGB(i, j);
-						Color col = new Color(rgb);
-						byte alpha = (byte) (col.getAlpha() & 0xff);
-						byte red = (byte) (col.getRed() & 0xff);
-						byte green = (byte) (col.getGreen() & 0xff);
-						byte blue = (byte) (col.getBlue() & 0xff);
-						
-						int bgra = (red << 24) | (green << 16) | (blue << 8) | alpha;
-						myWriter.write(bgra);
-					}
-				}
-				myWriter.close();
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		Runtime runtime = Runtime.getRuntime();
+		Formatter.exportXML(imagePanel, "temp.xml");
+		
+		try {
+			Process process = runtime.exec(new String[] {MenuWindow.cppPath, 
+					"ProjectToImage", "temp.xml", path, "null"});
+			process.waitFor();
+			System.out.println(process.exitValue());
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
+		
 	}
 	
 	private static Node createLayer(Document doc, Layer lay) {
@@ -278,7 +274,10 @@ public class Formatter {
 	        transf.transform(source, file);
 	        
 		} catch (Exception e) {
-			e.printStackTrace();
+	    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+	    			    "Couldn't export your file",
+	    			    "Invalid Export",
+	    			    JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -314,8 +313,10 @@ public class Formatter {
 			}
 			
 		} catch (ParserConfigurationException | SAXException | IOException e) {
-			e.printStackTrace();
-			return;
+	    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+	    			    "Couldn't read your project",
+	    			    "Invalid File(s)",
+	    			    JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -371,7 +372,10 @@ public class Formatter {
 	        transf.transform(source, file);
 	        
 		} catch (Exception e) {
-			e.printStackTrace();
+	    	 JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+	    			    "Couldn't export your operation",
+	    			    "Error",
+	    			    JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	

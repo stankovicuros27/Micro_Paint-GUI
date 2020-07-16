@@ -15,6 +15,7 @@ import java.awt.image.WritableRaster;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import java.util.ArrayList;
@@ -38,7 +39,30 @@ public class ImagePanel extends JPanel {
 	
 	public void addLayer(Layer layer) {
 		if (layer != null) {
+			if(layer.getOpacity() != 100) {
+				int op = layer.getOpacity();
+				if (op > 100) op = 100;
+				if (op < 0) op = 0;
+				
+				Runtime runtime = Runtime.getRuntime();
+				
+				try {
+					Process process = runtime.exec(new String[] {MenuWindow.cppPath, 
+							"ImageOpacity", layer.getPath(), "" + op, "null"});
+					process.waitFor();
+					System.out.println(process.exitValue());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 			Formatter.loadLayer(layer);
+			if (!layer.isOk() || layer.getImage() == null) {
+				JOptionPane.showMessageDialog(MenuWindow.getInstance(),
+	    			    "Couldn't read layer",
+	    			    "Invalid File",
+	    			    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 			if (layer.getX() + layer.getImage().getWidth() > imageWindow.getWidth()) {
 				imageWindow.setWidth(layer.getX() + layer.getImage().getWidth());
 			}
